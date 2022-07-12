@@ -9,13 +9,19 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Scrapper:
+    """ Scrape the web page for required information """
 
     def __init__(self, url: str, classid: str):
         self.url = url
         self.classid = classid
 
-    def get_link(self) -> str:
+    def get_link(self):
+        """ Returns link for xkcd images """
+
+        image_data=[]
+
         rsp = requests.get(self.url)
         soup = BeautifulSoup(rsp.text, 'html.parser')
         links = soup.findAll('div', class_=self.classid)
@@ -23,35 +29,51 @@ class Scrapper:
         for link in links:
             image_tag = link.findChildren('img')
             if len(image_tag):
-                return 'https:'+image_tag[0]["src"]
+                image_data.append('https:'+image_tag[0]["src"])
+                image_data.append(image_tag[0]["alt"])
+                image_data.append(image_tag[0]["title"])
+                return image_data
+
 
 class Bot(discord.Client):
+    """ Main bot class """
+
     async def on_ready(self):
+        """ Print message in log after succesful initial run """
+
         print(f'Logged in as {self.user}')
 
     async def on_message(self, message):
+        """ Sees message, and respond accordingly """
+
         if message.author == self.user:
             return
 
-        if message.content.startswith('-r.greet'):
-            await message.channel.send(f'Hello {message.author}')
-
         if message.content.startswith('-x'):
-            img_link=''
-            if(message.content == '-x.today') :
-                image = Scrapper('https://xkcd.com', 'box')
-                img_link = image.get_link()
-            elif(message.content == '-x.random') :
-                image = Scrapper('https://c.xkcd.com/random/comic/', 'box')
-                img_link = image.get_link()
-                
-            async with aiohttp.ClientSession() as session:
+            img_link = ''
+
+            if(message.content == '-x frontpg'):
+                img_link = 'https://xkcd.com'
+            elif(message.content == '-x random'):
+                img_link = 'https://c.xkcd.com/random/comic/'
+
+            image = Scrapper(img_link, 'box')
+            img_data= image.get_link()
+
+            embed = discord.Embed(
+                title=img_data[1], description=img_data[2])
+            embed.set_image(url=img_data[0])
+            await message.channel.send(embed=embed)
+
+            # Extra computatioin needed to send pic with this method.
+            """ async with aiohttp.ClientSession() as session:
                 async with session.get(img_link) as rsp:
                     buffer = io.BytesIO(await rsp.read())
+                
             await message.channel.send(file=discord.File(buffer, 'test.png'))
+            """
 
 
-
-TOKEN =os.getenv('TOKEN')
+TOKEN = os.getenv('TOKEN')
 bot = Bot()
 bot.run(TOKEN)
