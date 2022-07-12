@@ -6,6 +6,7 @@ import requests
 
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from keep_running import keep_running
 
 load_dotenv()
 
@@ -75,5 +76,9 @@ class Bot(discord.Client):
 
 
 TOKEN = os.getenv('TOKEN')
+
 bot = Bot()
+
+keep_running()
+
 bot.run(TOKEN)
