@@ -34,7 +34,7 @@ class Bot(discord.Client):
                 return
 
             embed = discord.Embed(
-                title=img_data[1], description=img_data[2])
+                title=img_data[1], description=img_data[2],url=img_data[3])
             embed.set_image(url=img_data[0])
             await message.channel.send(embed=embed)
 

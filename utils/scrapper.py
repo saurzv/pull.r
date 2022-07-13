@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 
 class Scrapper:
-
     """ Scrape the web page for required information """
 
     def __init__(self, url: str, classid: str):
@@ -26,4 +25,5 @@ class Scrapper:
                 image_data.append('https:'+image_tag[0]["src"])
                 image_data.append(image_tag[0]["alt"])
                 image_data.append(image_tag[0]["title"])
+                image_data.append(rsp.url)
                 return image_data
