@@ -63,7 +63,7 @@ class Bot(discord.Client):
 
         if message.content.startswith('-man'):
             embed = discord.Embed(title='pull.r manual')
-            self._get_manual(embed)
+            self.get_manual(embed)
             await message.channel.send(embed=embed)
 
         if message.content.startswith('-x'):
