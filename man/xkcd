@@ -1,0 +1,5 @@
+USEAGE : -x OPTION
+    
+OPTION
+    random  : gets a random xkcd
+    frontpg : gets xkcd at front page 

@@ -1,8 +1,10 @@
 import os
 import discord
-import io
-import aiohttp
 import requests
+import glob
+
+# import io
+# import aiohttp
 
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
@@ -19,9 +21,9 @@ class Scrapper:
         self.classid = classid
 
     def get_link(self):
-        """ Returns link for xkcd images """
+        """ Return link for xkcd images """
 
-        image_data=[]
+        image_data = []
 
         rsp = requests.get(self.url)
         soup = BeautifulSoup(rsp.text, 'html.parser')
@@ -44,11 +46,25 @@ class Bot(discord.Client):
 
         print(f'Logged in as {self.user}')
 
+    def get_manual(self, embed):
+        """ Get manual for every command """
+
+        for file in glob.glob('./man/*'):
+            filename = file.split('/')[2]
+            with open(file, 'r') as f:
+                line = f.read()
+                embed.add_field(name=filename, value=line, inline=False)
+
     async def on_message(self, message):
-        """ Sees message, and respond accordingly """
+        """ See message, and respond accordingly """
 
         if message.author == self.user:
             return
+
+        if message.content.startswith('-man'):
+            embed = discord.Embed(title='pull.r manual')
+            self._get_manual(embed)
+            await message.channel.send(embed=embed)
 
         if message.content.startswith('-x'):
             img_link = ''
@@ -59,7 +75,7 @@ class Bot(discord.Client):
                 img_link = 'https://c.xkcd.com/random/comic/'
 
             image = Scrapper(img_link, 'box')
-            img_data= image.get_link()
+            img_data = image.get_link()
 
             embed = discord.Embed(
                 title=img_data[1], description=img_data[2])
@@ -70,15 +86,11 @@ class Bot(discord.Client):
             """ async with aiohttp.ClientSession() as session:
                 async with session.get(img_link) as rsp:
                     buffer = io.BytesIO(await rsp.read())
-                
             await message.channel.send(file=discord.File(buffer, 'test.png'))
             """
 
 
 TOKEN = os.getenv('TOKEN')
-
 bot = Bot()
-
 keep_running()
-
 bot.run(TOKEN)
