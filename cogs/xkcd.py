@@ -10,7 +10,7 @@ class Xkcd(Cog):
         self.client = client
 
     @command(name='xkcd',
-             brief='Gets xkcd, type -help xkcd for more.',
+             brief=': Gets xkcd, type -help xkcd for more.',
              help=f'option\nrandom: Gets a random xkcd.',
              description='Gets front page xkcd if no option is specified.')
     async def xkcd(self, ctx: Context, option: str = ''):
