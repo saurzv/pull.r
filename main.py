@@ -1,8 +1,10 @@
+from codecs import utf_16_be_decode
 import discord
 import os
 
 from dotenv import load_dotenv
 from discord.ext.commands import Bot
+from utils.keep_running import keep_running
 
 load_dotenv()
 
@@ -34,6 +36,8 @@ async def on_message(message: discord.message) -> None:
 
 if __name__ == '__main__':
     load_commands()
+
+keep_running()
 
 TOKEN = os.getenv('TOKEN')
 client.run(TOKEN)
